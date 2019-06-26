@@ -1,25 +1,44 @@
 package com.company;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
-	// write your code here
-        FileDownloader fileDownloader1 = new FileDownloader();
-        FileDownloader fileDownloader2 = new FileDownloader();
+    public static void main(String[] args) throws IOException {
+        DownloadManager manager = DownloadManager.getInstance();
+        manager.start();
 
-        fileDownloader1.setURL("http://212.183.159.230/5MB.zip");
-        fileDownloader1.setPath("D:\\1.zip");
+        //FileDownloader fileDownloader1 = new FileDownloader("http://212.183.159.230/5MB.zip", "D:\\1.zip");
+        //FileDownloader fileDownloader2 = new FileDownloader("http://212.183.159.230/10MB.zip", "D:\\2.zip");
 
-        fileDownloader2.setURL("http://212.183.159.230/10MB.zip");
-        fileDownloader2.setPath("D:\\2.zip");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String choice = "";
 
-        fileDownloader1.start();
-        fileDownloader2.start();
+        while (!manager.isInterrupted()) {
+            System.out.println("1: Download file");
+            System.out.println("2: Exit");
+            //System.out.println(manager.getProgress());
+            System.out.println(">");
+            choice = reader.readLine();
 
-        while (!fileDownloader1.isCompleted() || !fileDownloader2.isCompleted()) {
-            Thread.sleep(1000);
-            System.out.println(fileDownloader1.getProgress() + " " + fileDownloader2.getProgress());
+            switch (choice) {
+                case "1": {
+                    System.out.println("URL> ");
+                    String URL = reader.readLine().trim();
+                    System.out.println("filename> ");
+                    String filename = reader.readLine();
+                    manager.addAndStart(new FileDownloader(URL, filename));
+                    break;
+                }
+                case "2": {
+                    manager.closeAllDownloads();
+                    manager.interrupt();
+                    break;
+                }
+            }
         }
     }
 }
