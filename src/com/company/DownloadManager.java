@@ -6,11 +6,30 @@ import java.util.List;
 
 public class DownloadManager extends Thread {
     private static DownloadManager instance;
-    private static final List<FileDownloader> downloads = new ArrayList<>();
-    private String progress = "";
+    private static List<Download> downloads = new ArrayList<>();
+    private static String progress = "";
 
     private DownloadManager() {
 
+    }
+
+    private void deleteCompleted() {
+        if (downloads.isEmpty()) {
+            return;
+        }
+
+        Download download;
+        Iterator<Download> iterator = downloads.iterator();
+
+        while (iterator.hasNext()) {
+            download = iterator.next();
+
+            if (download != null && download.isCompleted()) {
+                System.out.println("COMPLETED: " + download.getProgress());
+                download.interrupt();
+                iterator.remove();
+            }
+        }
     }
 
     public static DownloadManager getInstance() {
@@ -25,78 +44,41 @@ public class DownloadManager extends Thread {
         return instance;
     }
 
-    public void addAndStart(FileDownloader downloader) {
-        downloads.add(downloader);
-        downloader.start();
-    }
-
-    public void printDownloadProgress() {
-        if (downloads.isEmpty()) {
-            return;
-        }
-
-        downloads.forEach(downloader -> System.out.print(downloader.getProgress()));
-        System.out.println();
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void deleteCompleted() {
-        if (downloads.isEmpty()) {
-            return;
-        }
-
-        FileDownloader downloader;
-        Iterator<FileDownloader> iterator = downloads.iterator();
-
-        while (iterator.hasNext()) {
-            downloader = iterator.next();
-
-            if (downloader.isCompleted()) {
-                System.out.println(downloader.getProgress());
-                downloader.interrupt();
-                iterator.remove();
-            }
-        }
-    }
-
-    public boolean isAllCompleted() {
-        for (FileDownloader downloader : downloads) {
-            if (!downloader.isCompleted()) {
-                return false;
-            }
-        }
-
-        return true;
+    public void addAndStart(Download download) {
+        downloads.add(download);
+        download.start();
     }
 
     public void closeAllDownloads() {
-        for (FileDownloader downloader : downloads) {
-            downloader.closeConnection();
-            downloader.interrupt();
+        if (downloads.isEmpty()) {
+            return;
         }
-    }
 
-    @Override
-    public void run() {
-        while (!isAllCompleted()) {
-            printDownloadProgress();
-            deleteCompleted();
+        Download download;
+        Iterator<Download> iterator = downloads.iterator();
+
+        while (iterator.hasNext()) {
+            download = iterator.next();
+            download.closeConnection();
+            iterator.remove();
         }
     }
 
     public String getProgress() {
         if (downloads.isEmpty()) {
-            return "";
+            return "No downloads";
         }
 
         progress = "";
         downloads.forEach(downloader -> progress = progress.concat(downloader.getProgress()));
 
         return progress;
+    }
+
+    @Override
+    public void run() {
+        while (!this.isInterrupted()) {
+            deleteCompleted();
+        }
     }
 }
