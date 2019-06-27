@@ -12,7 +12,7 @@ public class Download extends Thread {
     private String filename;
     private boolean completed = false;
     private StringBuilder progress = new StringBuilder();
-    private HttpURLConnection connection = getHttpConnection(URL);
+    private HttpURLConnection connection;
 
     private Download() {
 
@@ -24,7 +24,7 @@ public class Download extends Thread {
     }
 
     private void download() {
-        HttpURLConnection connection = getHttpConnection(URL);
+        connection = getHttpConnection(URL);
 
         if (connection == null) {
             completed = true;
@@ -115,7 +115,9 @@ public class Download extends Thread {
     }
 
     public void closeConnection() {
-        connection.disconnect();
+        if (connection != null) {
+            connection.disconnect();
+        }
     }
 
     private void setProgressCurrentStatus(String filename, int currentSize, int fullSize) {
