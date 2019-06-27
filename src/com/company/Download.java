@@ -8,9 +8,9 @@ import java.security.NoSuchAlgorithmException;
 
 public class Download extends Thread {
     private int BUFFER_SIZE = 4096;
+    private boolean completed = false;
     private String URL;
     private String filename;
-    private boolean completed = false;
     private StringBuilder progress = new StringBuilder();
     private HttpURLConnection connection;
 
@@ -36,8 +36,8 @@ public class Download extends Thread {
 
             int currentSize = 0;
             int bytesCount;
-            byte[] dataBuffer = new byte[BUFFER_SIZE];
             int fullSize = connection.getContentLength();
+            byte[] dataBuffer = new byte[BUFFER_SIZE];
 
             while ((bytesCount = inputStream.read(dataBuffer, 0, BUFFER_SIZE)) != -1) {
                 outputStream.write(dataBuffer, 0, bytesCount);

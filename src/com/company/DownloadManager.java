@@ -7,7 +7,7 @@ import java.util.List;
 public class DownloadManager extends Thread {
     private static DownloadManager instance;
     private List<Download> downloads = new ArrayList<>();
-    private String progress = "";
+    private StringBuilder progress = new StringBuilder();
 
     private DownloadManager() {
 
@@ -69,10 +69,10 @@ public class DownloadManager extends Thread {
             return "No downloads";
         }
 
-        progress = "";
-        downloads.forEach(downloader -> progress = progress.concat(downloader.getProgress()));
+        progress.setLength(0);
+        downloads.forEach(downloader -> progress.append(downloader.getProgress()));
 
-        return progress;
+        return progress.toString();
     }
 
     @Override
