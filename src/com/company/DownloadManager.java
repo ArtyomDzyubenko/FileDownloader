@@ -6,8 +6,8 @@ import java.util.List;
 
 public class DownloadManager extends Thread {
     private static DownloadManager instance;
-    private static List<Download> downloads = new ArrayList<>();
-    private static String progress = "";
+    private List<Download> downloads = new ArrayList<>();
+    private String progress = "";
 
     private DownloadManager() {
 

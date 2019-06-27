@@ -7,7 +7,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Download extends Thread {
-    private static final int BUFFER_SIZE = 4096;
+    private int BUFFER_SIZE = 4096;
     private String URL;
     private String filename;
     private boolean completed = false;
