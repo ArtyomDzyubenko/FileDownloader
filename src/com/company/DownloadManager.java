@@ -13,7 +13,7 @@ public class DownloadManager extends Thread {
 
     }
 
-    private void deleteCompleted() {
+    private synchronized void deleteCompleted() {
         if (downloads.isEmpty()) {
             return;
         }
@@ -44,12 +44,12 @@ public class DownloadManager extends Thread {
         return instance;
     }
 
-    public void addAndStart(Download download) {
+    public synchronized void addAndStart(Download download) {
         downloads.add(download);
         download.start();
     }
 
-    public void closeAllDownloads() {
+    public synchronized void closeAllDownloads() {
         if (downloads.isEmpty()) {
             return;
         }
@@ -64,7 +64,7 @@ public class DownloadManager extends Thread {
         }
     }
 
-    public String getProgress() {
+    public synchronized String getProgress() {
         if (downloads.isEmpty()) {
             return "No downloads";
         }
@@ -79,6 +79,13 @@ public class DownloadManager extends Thread {
     public void run() {
         while (!this.isInterrupted()) {
             deleteCompleted();
+
+            try {
+                deleteCompleted();
+                sleep(10);
+            } catch (InterruptedException e) {
+                interrupt();
+            }
         }
     }
 }
