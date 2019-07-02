@@ -137,8 +137,6 @@ public class Download extends Thread {
 
     @Override
     public void run() {
-        if (!this.isInterrupted()) {
-            download();
-        }
+         download();
     }
 }

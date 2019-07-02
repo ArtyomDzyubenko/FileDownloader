@@ -21,11 +21,11 @@ public class Main {
         String choice;
 
         while (!manager.isInterrupted()) {
-            System.out.println("---FILE DOWNLOADER---");
+            System.out.println("----FILE DOWNLOADER----");
             System.out.println("1: Download file");
             System.out.println("2: Show progress");
             System.out.println("3: Exit");
-            System.out.println("---------------------");
+            System.out.println("-----------------------");
             System.out.print("> ");
 
             try {
